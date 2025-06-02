@@ -1,0 +1,9 @@
+import {type UserController} from './UserController.js';
+
+export async function getFirestore(userCtrl: UserController) {
+	if (userCtrl.isConnected) {
+		const {firebase} = await import('./firebase.js');
+		const {getFirestore} = await import('firebase/firestore');
+		return getFirestore(firebase);
+	}
+}

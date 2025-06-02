@@ -1,0 +1,40 @@
+{
+	"name": "@vdegenne/firebase",
+	"description": "some firebase helpers",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "wireit"
+	},
+	"files": [
+		"./lib"
+	],
+	"devDependencies": {
+		"typescript": "^5.8.3",
+		"wireit": "^0.14.12"
+	},
+	"wireit": {
+		"build": {
+			"command": "tsc --pretty",
+			"clean": "if-file-deleted",
+			"files": [
+				"./tsconfig.json",
+				"./src"
+			],
+			"output": [
+				"./lib"
+			]
+		}
+	},
+	"dependencies": {
+		"@snar/lit": "^1.6.4",
+		"firebase": "^11.8.1",
+		"snar-save-to-local-storage": "^1.0.1",
+		"toastit": "^2.1.3"
+	}
+}
