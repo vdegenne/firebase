@@ -1,11 +1,11 @@
 import {addDoc, collection, getFirestore} from 'firebase/firestore';
 import type {
-	AugmentedController,
+	ControllerWithId,
 	FirestoreObjectManager,
 } from '../FirestoreObjectManager.js';
 
-export async function addObject<T extends AugmentedController>(
-	manager: FirestoreObjectManager,
+export async function addObject<T extends ControllerWithId>(
+	manager: FirestoreObjectManager<T>,
 	object: T,
 ) {
 	if (!manager.userCtrl.isConnected) {

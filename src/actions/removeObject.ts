@@ -1,11 +1,11 @@
 import {deleteDoc, doc, getFirestore} from 'firebase/firestore';
 import type {
-	AugmentedController,
+	ControllerWithId,
 	FirestoreObjectManager,
 } from '../FirestoreObjectManager.js';
 
-export async function removeObject<T extends AugmentedController>(
-	manager: FirestoreObjectManager,
+export async function removeObject<T extends ControllerWithId>(
+	manager: FirestoreObjectManager<T>,
 	object: T,
 ) {
 	if (!manager.userCtrl.isConnected) {

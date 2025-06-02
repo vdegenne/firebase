@@ -4,10 +4,13 @@ import {toast} from 'toastit';
 import {type UserController} from './UserController.js';
 
 // export type defaulT = ReactiveController;
-export type AugmentedController = ReactiveController & {id?: string};
+// interface ControllerWithId extends ReactiveController {
+// 	id?: string;
+// }
+export type ControllerWithId = ReactiveController & {id?: string};
 
 export class FirestoreObjectManager<
-	T extends ReactiveController<any> = any,
+	T extends ControllerWithId,
 > extends ReactiveController {
 	@state() objects: T[] = [];
 
@@ -25,7 +28,7 @@ export class FirestoreObjectManager<
 	}
 
 	getObjectFromId(id: string) {
-		return this.objects.find((object: AugmentedController) => object.id === id);
+		return this.objects.find((object: ControllerWithId) => object.id === id);
 	}
 
 	async loadObjects(): Promise<void> {

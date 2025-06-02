@@ -1,11 +1,11 @@
 import {doc, getFirestore, updateDoc} from 'firebase/firestore';
 import type {
-	AugmentedController,
+	ControllerWithId,
 	FirestoreObjectManager,
 } from '../FirestoreObjectManager.js';
 
-export async function updateObject<T extends AugmentedController>(
-	manager: FirestoreObjectManager,
+export async function updateObject<T extends ControllerWithId>(
+	manager: FirestoreObjectManager<T>,
 	objectId: string,
 	properties: Partial<T>,
 ): Promise<void> {

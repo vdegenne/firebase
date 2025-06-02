@@ -32,7 +32,7 @@
 		}
 	},
 	"dependencies": {
-		"@snar/lit": "^1.6.4",
+		"@snar/lit": "^1.7.1",
 		"firebase": "^11.8.1",
 		"snar-save-to-local-storage": "^1.0.1",
 		"toastit": "^2.1.3"
