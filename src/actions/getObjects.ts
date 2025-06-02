@@ -1,7 +1,7 @@
 import {collection, getDocs, getFirestore} from 'firebase/firestore';
-import {
+import type {
 	ControllerWithId,
-	type FirestoreObjectManager,
+	FirestoreObjectManager,
 } from '../FirestoreObjectManager.js';
 
 export async function getObjects<T extends ControllerWithId>(

@@ -3,10 +3,6 @@ import {type FirebaseApp} from 'firebase/app';
 import {toast} from 'toastit';
 import {type UserController} from './UserController.js';
 
-// export type defaulT = ReactiveController;
-// interface ControllerWithId extends ReactiveController {
-// 	id?: string;
-// }
 export type ControllerWithId = ReactiveController & {id?: string};
 
 export class FirestoreObjectManager<
