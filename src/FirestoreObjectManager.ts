@@ -42,7 +42,7 @@ export class FirestoreObjectManager<
 	async addObject(object: T) {
 		try {
 			const {addObject} = await import('./actions/addObject.js');
-			await addObject(this, object);
+			this.objects = [...this.objects, await addObject(this, object)];
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				toast('Something went wrong, check console.');
@@ -51,10 +51,19 @@ export class FirestoreObjectManager<
 		}
 	}
 
-	async removeObject(object: T) {
+	async removeObject(objectId: string): Promise<void>;
+	async removeObject(object: T): Promise<void>;
+	async removeObject(object: string | T): Promise<void> {
 		try {
+			const objectId = typeof object === 'string' ? object : object.id;
+			const index = this.objects.findIndex((o) => o.id === objectId);
+			if (index < 0) {
+				throw new Error(`Object of id ${objectId} can't be found.`);
+			}
 			const {removeObject} = await import('./actions/removeObject.js');
-			await removeObject(this, object);
+			await removeObject(this, this.objects[index]);
+			this.objects.splice(index, 1);
+			this.objects = [...this.objects];
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				toast('Something went wrong, check console.');
@@ -62,10 +71,12 @@ export class FirestoreObjectManager<
 			}
 		}
 	}
+
 	async updateObject(objectId: string, properties: Partial<T>) {
 		try {
 			const {updateObject} = await import('./actions/updateObject.js');
 			await updateObject(this, objectId, properties);
+			this.objects = [...this.objects];
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				toast('Something went wrong, check console.');
