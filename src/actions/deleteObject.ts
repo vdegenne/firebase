@@ -4,7 +4,7 @@ import type {
 	FirestoreObjectManager,
 } from '../FirestoreObjectManager.js';
 
-export async function removeObject<T extends ControllerWithId>(
+export async function deleteObject<T extends ControllerWithId>(
 	manager: FirestoreObjectManager<T>,
 	object: T,
 ) {

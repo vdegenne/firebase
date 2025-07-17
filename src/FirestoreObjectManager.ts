@@ -66,8 +66,8 @@ export class FirestoreObjectManager<
 			if (index < 0) {
 				throw new Error(`Object of id ${objectId} can't be found.`);
 			}
-			const {removeObject} = await import('./actions/removeObject.js');
-			await removeObject(this, this.objects[index]);
+			const {deleteObject} = await import('./actions/deleteObject.js');
+			await deleteObject(this, this.objects[index]);
 			this.objects.splice(index, 1);
 			this.objects = [...this.objects];
 		} catch (err: unknown) {
@@ -78,7 +78,18 @@ export class FirestoreObjectManager<
 		}
 	}
 
+	override async getUpdateComplete() {
+		const result = await super.getUpdateComplete();
+		await this.#updateObjectPromiseWithResolvers?.promise;
+		return result;
+	}
+
+	#updateObjectPromiseWithResolvers: PromiseWithResolvers<void> | undefined =
+		undefined;
 	async updateObject(objectId: string, properties: Partial<T>) {
+		this.#updateObjectPromiseWithResolvers?.reject();
+		this.#updateObjectPromiseWithResolvers = Promise.withResolvers();
+
 		try {
 			const {updateObject} = await import('./actions/updateObject.js');
 			await updateObject(this, objectId, properties);
@@ -88,6 +99,8 @@ export class FirestoreObjectManager<
 				toast('Something went wrong, check console.');
 				throw err;
 			}
+		} finally {
+			this.#updateObjectPromiseWithResolvers.resolve();
 		}
 	}
 }
