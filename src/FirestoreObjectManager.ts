@@ -3,12 +3,18 @@ import {type FirebaseApp} from 'firebase/app';
 import {toast} from 'toastit';
 import {type UserController} from './UserController.js';
 
-export type ControllerWithId = ReactiveController & {id?: string};
+export interface ControllerWithId extends ReactiveController {
+	id?: string;
+}
 
 export class FirestoreObjectManager<
 	T extends ControllerWithId,
 > extends ReactiveController {
 	@state() objects: T[] = [];
+
+	getObjects() {
+		return [...this.objects];
+	}
 
 	constructor(
 		public firebase: FirebaseApp,
@@ -51,9 +57,9 @@ export class FirestoreObjectManager<
 		}
 	}
 
-	async removeObject(objectId: string): Promise<void>;
-	async removeObject(object: T): Promise<void>;
-	async removeObject(object: string | T): Promise<void> {
+	async deleteObject(objectId: string): Promise<void>;
+	async deleteObject(object: T): Promise<void>;
+	async deleteObject(object: string | T): Promise<void> {
 		try {
 			const objectId = typeof object === 'string' ? object : object.id;
 			const index = this.objects.findIndex((o) => o.id === objectId);
