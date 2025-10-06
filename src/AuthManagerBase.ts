@@ -17,12 +17,21 @@ export interface AuthManagerImplInterface {
 	onAuthStateChanged(user: FirebaseUser | null): void;
 	// onAuthStateChangedComplete?(user: UserController): void;
 	onUserConnected(user: UserController): void;
-	onUserDisconnected(): void;
+	onUserDisconnected(user: UserController): void;
 }
 
 export class AuthManagerBase implements AuthManagerImplInterface {
+	/** TODO: implement a promise to wait for the first onAuthStateChanged call to avoid using an undefined object below */
+	#onAuthStateChangedPromiseWithResolvers!: PromiseWithResolvers<void>;
+
+	get authStateChangedComplete() {
+		return this.#onAuthStateChangedPromiseWithResolvers.promise;
+	}
+
 	constructor(protected userCtrl: UserController) {
 		onAuthStateChanged(getAuth(), async (user: FirebaseUser | null) => {
+			this.#onAuthStateChangedPromiseWithResolvers =
+				Promise.withResolvers<void>();
 			this.onAuthStateChanged(user);
 			await this._onAuthStateChanged(user);
 
@@ -30,16 +39,17 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 			if (this.userCtrl.isConnected) {
 				this.onUserConnected(this.userCtrl);
 			} else {
-				this.onUserDisconnected();
+				this.onUserDisconnected(this.userCtrl);
 			}
-			// this.onAuthStateChangedComplete(this.userCtrl);
+
+			this.#onAuthStateChangedPromiseWithResolvers.resolve();
 		});
 	}
 
 	onAuthStateChanged(user: FirebaseUser | null): void {}
 	// onAuthStateChangedComplete(user: UserController): void {}
 	onUserConnected(user: UserController): void {}
-	onUserDisconnected(): void {}
+	onUserDisconnected(user: UserController): void {}
 
 	async _onAuthStateChanged(user: FirebaseUser | null): Promise<void> {
 		if (user) {
@@ -100,7 +110,7 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 			new GoogleAuthProvider(),
 		);
 		const isNewUser = !!getAdditionalUserInfo(credential)?.isNewUser;
-		this.userCtrl.isNewUser = isNewUser;
+		// this.userCtrl.isNewUser = isNewUser;
 		return {
 			credential,
 			user: credential.user,

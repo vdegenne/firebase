@@ -1,4 +1,4 @@
-import {ReactiveController, state} from '@snar/lit';
+import {PropertyValues, ReactiveController, state} from '@snar/lit';
 import type {User as FirebaseUser} from 'firebase/auth';
 
 export {type FirebaseUser};
@@ -29,15 +29,27 @@ export class UserController
 	 */
 	@state() isNewUser: boolean | undefined = undefined;
 
+	#hasConnectedBefore = false;
+	get hasConnectedBefore() {
+		return this.#hasConnectedBefore;
+	}
+
 	reset() {
 		this.user = null;
 		this.isPremium = false;
 		this.isNewUser = undefined;
 	}
 
+	async update(changed: PropertyValues<this>) {
+		if (changed.has('user') && this.user !== null) {
+			this.#hasConnectedBefore = true;
+		}
+	}
+
 	async updated() {
 		// console.log('User center updated.');
 		if (this.user) {
+			// console.log(this.user);
 			// console.log((await this.user.getIdTokenResult()).claims);
 		}
 	}
