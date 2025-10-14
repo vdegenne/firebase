@@ -10,7 +10,7 @@ import {type FirebaseUser, UserController} from './UserController.js';
 interface LoginInformation {
 	credential: UserCredential;
 	user: UserInfo;
-	isNewUser: boolean;
+	isNewUser: boolean | undefined;
 }
 
 export interface AuthManagerImplInterface {
@@ -18,6 +18,13 @@ export interface AuthManagerImplInterface {
 	// onAuthStateChangedComplete?(user: UserController): void;
 	onUserConnected(user: UserController): void;
 	onUserDisconnected(user: UserController): void;
+}
+
+export class AlreadyLoggedInError extends Error {
+	constructor(message = 'Already logged in') {
+		super(message);
+		this.name = 'AlreadyLoggedInError';
+	}
 }
 
 export class AuthManagerBase implements AuthManagerImplInterface {
@@ -67,10 +74,16 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 	}
 
 	async loginOrLogout() {
-		if (!this.isUserLogged()) {
+		if (!(await this.isUserLogged())) {
 			return await this.login();
 		} else {
 			return await this.logout();
+		}
+	}
+
+	async #doNotLogTwice() {
+		if (await this.isUserLogged()) {
+			throw new AlreadyLoggedInError();
 		}
 	}
 
@@ -100,20 +113,59 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 	 * Check `onAuthStateChanged.ts` for more details.
 	 */
 	async login(): Promise<LoginInformation> {
-		if (await this.isUserLogged()) {
-			throw new Error('Already logged in');
-		}
+		await this.#doNotLogTwice();
 		const {signInWithPopup, GoogleAuthProvider, getAdditionalUserInfo} =
 			await import('firebase/auth');
-		const credential = await signInWithPopup(
+		const userCredential = await signInWithPopup(
 			getAuth(),
 			new GoogleAuthProvider(),
 		);
-		const isNewUser = !!getAdditionalUserInfo(credential)?.isNewUser;
-		// this.userCtrl.isNewUser = isNewUser;
+		const isNewUser = getAdditionalUserInfo(userCredential)?.isNewUser;
+		this.userCtrl.isNewUser = isNewUser;
 		return {
-			credential,
-			user: credential.user,
+			credential: userCredential,
+			user: userCredential.user,
+			isNewUser,
+		};
+	}
+
+	/**
+	 * How to use:
+	 * ```js
+	 * try {
+	 *   await authManager.loginWithGoogleCredential(idToken)
+	 * } catch (err) {
+	 *   if (err instanceof AlreadyLoggedInError) {
+	 *     await authManager.logout();
+	 *   } else {
+	 *     throw err;
+	 *   }
+	 * }
+	 * ```
+	 */
+	async loginWithGoogleCredential(
+		googleIdToken?: string | null,
+		googleAccessToken?: string | null,
+	): Promise<LoginInformation> {
+		await this.#doNotLogTwice();
+
+		const {signInWithCredential, GoogleAuthProvider, getAdditionalUserInfo} =
+			await import('firebase/auth');
+
+		const oauthCredential = GoogleAuthProvider.credential(
+			googleIdToken,
+			googleAccessToken,
+		);
+
+		const userCredential = await signInWithCredential(
+			getAuth(),
+			oauthCredential,
+		);
+		const isNewUser = getAdditionalUserInfo(userCredential)?.isNewUser;
+		this.userCtrl.isNewUser = isNewUser;
+		return {
+			credential: userCredential,
+			user: userCredential.user,
 			isNewUser,
 		};
 	}
