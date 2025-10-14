@@ -42,12 +42,15 @@
 	},
 	"devDependencies": {
 		"typescript": "^5.9.3",
-		"wireit": "^0.14.12"
+		"wireit": "^0.14.12",
+		"@snar/lit": "^1.8.0"
 	},
 	"dependencies": {
 		"firebase": "^12.4.0",
 		"snar-save-to-local-storage": "^1.0.1",
-		"toastit": "^2.2.2",
+		"toastit": "^2.2.2"
+	},
+	"peerDependencies": {
 		"@snar/lit": "^1.8.0"
 	}
 }
