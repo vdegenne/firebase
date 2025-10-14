@@ -48,9 +48,7 @@
 	"dependencies": {
 		"firebase": "^12.4.0",
 		"snar-save-to-local-storage": "^1.0.1",
-		"toastit": "^2.2.2"
-	},
-	"peerDependencies": {
+		"toastit": "^2.2.2",
 		"@snar/lit": "^1.8.0"
 	}
 }
