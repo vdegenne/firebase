@@ -40,19 +40,19 @@ export class UserController
 		this.isNewUser = undefined;
 	}
 
-	async update(changed: PropertyValues<this>) {
+	update(changed: PropertyValues<this>) {
 		if (changed.has('user') && this.user !== null) {
 			this.#hasConnectedBefore = true;
 		}
 	}
 
-	async updated() {
-		// console.log('User center updated.');
-		if (this.user) {
-			// console.log(this.user);
-			// console.log((await this.user.getIdTokenResult()).claims);
-		}
-	}
+	// async updated() {
+	// 	// console.log('User center updated.');
+	// 	if (this.user) {
+	// 		// console.log(this.user);
+	// 		// console.log((await this.user.getIdTokenResult()).claims);
+	// 	}
+	// }
 
 	get id() {
 		return this.user?.uid;
