@@ -28,28 +28,30 @@ export class AlreadyLoggedInError extends Error {
 }
 
 export class AuthManagerBase implements AuthManagerImplInterface {
-	/** TODO: implement a promise to wait for the first onAuthStateChanged call to avoid using an undefined object below */
-	#onAuthStateChangedPromiseWithResolvers!: PromiseWithResolvers<void>;
-
-	get authStateChangedComplete() {
-		return this.#onAuthStateChangedPromiseWithResolvers.promise;
+	#firstOnAuthStateChangedPWR = Promise.withResolvers<void>();
+	get onAuthStateChangedFirstCall() {
+		return this.#firstOnAuthStateChangedPWR.promise;
 	}
 
+	onAuthStateChangedComplete = Promise.resolve();
+
 	constructor(protected userCtrl: UserController) {
-		onAuthStateChanged(getAuth(), async (user: FirebaseUser | null) => {
-			this.#onAuthStateChangedPromiseWithResolvers =
-				Promise.withResolvers<void>();
-			this.onAuthStateChanged(user);
-			await this._onAuthStateChanged(user);
+		onAuthStateChanged(getAuth(), (user: FirebaseUser | null) => {
+			this.onAuthStateChangedComplete = new Promise(async (resolve) => {
+				this.#firstOnAuthStateChangedPWR.resolve();
 
-			await this.userCtrl.updateComplete;
-			if (this.userCtrl.isConnected) {
-				this.onUserConnected(this.userCtrl);
-			} else {
-				this.onUserDisconnected(this.userCtrl);
-			}
+				this.onAuthStateChanged(user);
+				await this._onAuthStateChanged(user);
 
-			this.#onAuthStateChangedPromiseWithResolvers.resolve();
+				await this.userCtrl.updateComplete;
+				if (this.userCtrl.isConnected) {
+					this.onUserConnected(this.userCtrl);
+				} else {
+					this.onUserDisconnected(this.userCtrl);
+				}
+
+				resolve();
+			});
 		});
 	}
 
