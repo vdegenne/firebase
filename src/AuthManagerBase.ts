@@ -123,7 +123,7 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 			new GoogleAuthProvider(),
 		);
 		const isNewUser = getAdditionalUserInfo(userCredential)?.isNewUser;
-		this.userCtrl.isNewUser = isNewUser;
+		this.userCtrl._isNewUser = isNewUser;
 		return {
 			credential: userCredential,
 			user: userCredential.user,
@@ -164,7 +164,7 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 			oauthCredential,
 		);
 		const isNewUser = getAdditionalUserInfo(userCredential)?.isNewUser;
-		this.userCtrl.isNewUser = isNewUser;
+		this.userCtrl._isNewUser = isNewUser;
 		return {
 			credential: userCredential,
 			user: userCredential.user,
