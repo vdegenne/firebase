@@ -33,10 +33,11 @@ export class FirestoreObjectManager<
 		return this.objects.find((object: ControllerWithId) => object.id === id);
 	}
 
-	async loadObjects(): Promise<void> {
+	async loadObjects(): Promise<T[] | undefined> {
 		try {
 			const {getObjects} = await import('./actions/getObjects.js');
 			this.objects = await getObjects(this);
+			return this.objects;
 		} catch (err: unknown) {
 			if (err instanceof Error) {
 				toast('Something went wrong, check console.');
