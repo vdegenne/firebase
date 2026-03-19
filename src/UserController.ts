@@ -12,7 +12,7 @@ declare global {
 interface UserControllerInterface {
 	user: FirebaseUser | null;
 	isPremium: boolean | undefined;
-	isNewUser: boolean | undefined;
+	_isNewUser: boolean | undefined;
 }
 
 export class UserController
@@ -27,7 +27,11 @@ export class UserController
 	 * to make it available early from the onAuthStateChanged callback (e.g. to determine if
 	 * data should be persisted if the user used it offline prior to the connection.)
 	 */
-	@state() isNewUser: boolean | undefined = undefined;
+	@state() _isNewUser: boolean | undefined = undefined;
+
+	isNewUser() {
+		return !!this._isNewUser;
+	}
 
 	#hasConnectedBefore = false;
 	get hasConnectedBefore() {
@@ -37,7 +41,7 @@ export class UserController
 	reset() {
 		this.user = null;
 		this.isPremium = false;
-		this.isNewUser = undefined;
+		this._isNewUser = undefined;
 	}
 
 	update(changed: PropertyValues<this>) {
