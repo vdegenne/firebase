@@ -12,9 +12,9 @@ export async function whenUserConnects(
 	token: IdTokenResult,
 ) {
 	userCtrl.user = user;
-	userCtrl.isPremium = token.claims.isPremium === true;
+	userCtrl.premium = token.claims.premium === true;
 	// await userCtrl.updateComplete;
-	// if (!userCtrl.isPremium) {
+	// if (!userCtrl.premium) {
 	//   // access denied
 	//   await logout();
 	//   return;

@@ -11,7 +11,7 @@ declare global {
 
 interface UserControllerInterface {
 	user: FirebaseUser | null;
-	isPremium: boolean | undefined;
+	premium: boolean | undefined;
 	_isNewUser: boolean | undefined;
 }
 
@@ -20,7 +20,7 @@ export class UserController
 	implements UserControllerInterface
 {
 	@state() user: FirebaseUser | null = null;
-	@state() isPremium: boolean | undefined = undefined;
+	@state() premium: boolean | undefined = undefined;
 	/**
 	 * This property can be retrieved from UserCredential on one of firebase signin methods,
 	 * It only appears on first sign in on first user registration, so it's important to set it
@@ -41,7 +41,7 @@ export class UserController
 
 	reset() {
 		this.user = null;
-		this.isPremium = false;
+		this.premium = false;
 		this._isNewUser = undefined;
 	}
 
@@ -68,7 +68,7 @@ export class UserController
 	}
 
 	get isAuthorized() {
-		return this.isConnected && this.isPremium;
+		return this.isConnected && this.premium;
 	}
 }
 

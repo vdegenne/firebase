@@ -64,7 +64,7 @@ export class AuthManagerBase implements AuthManagerImplInterface {
 		if (user) {
 			const jwtoken = await user.getIdTokenResult(true);
 			this.userCtrl.user = user;
-			this.userCtrl.isPremium = jwtoken.claims.isPremium === true;
+			this.userCtrl.premium = jwtoken.claims.premium === true;
 		} else {
 			this.userCtrl.reset();
 		}
